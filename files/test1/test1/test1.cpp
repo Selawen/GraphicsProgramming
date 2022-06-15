@@ -42,7 +42,7 @@ void handleInput(GLFWwindow* window, float deltaTime) {
     static bool w, s, a, d, space, ctrl;
     static double cursorX = -1, cursorY = -1, lastCursorX, lastCursorY;
     static float pitch, yaw;
-    static float speed = 70.0f;
+    static float speed = 50.0f;
 
     float sensitivity = 80.0f * deltaTime;
     float step = speed * deltaTime;
@@ -104,8 +104,8 @@ int main()
     //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
     //create a window
-    int width = 800;
-    int height = 800;
+    int width = 1920;
+    int height = 1080;
 
     //create a window
     GLFWwindow* window = glfwCreateWindow(width, height, "Hello!", nullptr, NULL);
@@ -181,7 +181,7 @@ int main()
         //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         //glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ONE);
 
-        //renderModel(backpack, modelProgram, glm::vec3(20, 10, 200), glm::vec3(0, 0, 0), 1, view, projection);
+        renderModel(backpack, modelProgram, glm::vec3(119, 8, 120), glm::vec3(glm::radians(1.0) * -30.0f, glm::radians(1.0) * 230.0f, glm::radians(1.0) * -10.0f), 1, view, projection);
         renderModel(hut, hutProgram, glm::vec3(120, 8, 140), glm::vec3(0, glm::radians(1.0) * -45.0f, 0), 0.05, view, projection);
 
         //glDisable(GL_BLEND);

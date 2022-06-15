@@ -1,0 +1,5 @@
+﻿  test1.cpp
+C:\Users\inger\OneDrive\Documents\HKU\Y2\Dev Kernmodule Graphics\files\test1\test1\utils.h(9,15): warning C4244: 'initializing': conversion from 'std::streamoff' to 'int', possible loss of data
+C:\Users\inger\OneDrive\Documents\HKU\Y2\Dev Kernmodule Graphics\files\test1\test1\test1.cpp(149,22): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\inger\OneDrive\Documents\HKU\Y2\Dev Kernmodule Graphics\files\test1\test1\test1.cpp(185,129): warning C4305: 'argument': truncation from 'double' to 'float'
+  test1.vcxproj -> C:\Users\inger\OneDrive\Documents\HKU\Y2\Dev Kernmodule Graphics\files\test1\x64\Debug\test1.exe

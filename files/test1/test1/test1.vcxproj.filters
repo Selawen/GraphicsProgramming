@@ -58,6 +58,12 @@
     <None Include="fragWater.shader">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="vertCurl.shader">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="fragCurl.shader">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="vertWater.shader">

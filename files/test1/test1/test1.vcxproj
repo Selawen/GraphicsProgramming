@@ -155,10 +155,12 @@
     <ClInclude Include="utils.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="fragCurl.shader" />
     <None Include="fragmentShader.shader" />
     <None Include="fragmentShaderSky.shader" />
     <None Include="fragModel.shader" />
     <None Include="fragWater.shader" />
+    <None Include="vertCurl.shader" />
     <None Include="vertexShader.shader" />
     <None Include="vertexShaderSky.shader" />
     <None Include="vertModel.shader" />

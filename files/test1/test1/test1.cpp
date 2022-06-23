@@ -23,10 +23,18 @@ void renderTerrain(glm::mat4 view, glm::mat4 projection);
 void renderWater(glm::mat4 view, glm::mat4 projection);
 void renderModel(Model* model, unsigned int shader, glm::vec3 pos, glm::vec3 rot, float scale, glm::mat4 view, glm::mat4 projection);
 void setupResources();
+void renderCurlImage();
+void setupFinalResources();
+
 
 glm::vec3 cameraPosition(100, 100, 100), cameraForward(0, 0, 1), cameraUp(0, 1, 0);
-glm::vec3 lightDir(0, -0.5f, -1);
+glm::vec3 lightDir(-0.7f, 0.5f, -0.5f);
+glm::mat4 view, projection;
 
+int width, height;
+double t;
+
+/// huiswerkopdrachten
 unsigned int myProgram, skyProgram, modelProgram, hutProgram, waterProgram;
 unsigned int terrainSize,  plane, cubeSize;
 unsigned int heightmapID, heightNormalID;
@@ -34,9 +42,14 @@ unsigned int dirt, sand, grass, snow, rock, water;
 unsigned int waterSize;
 unsigned int VAO;
 
-
 Model* backpack;
 Model* hut;
+
+/// final assignment
+unsigned int image;
+unsigned int indexesSize;
+glm::vec2 mousePos;
+
 
 void handleInput(GLFWwindow* window, float deltaTime) {
     static bool w, s, a, d, space, ctrl;
@@ -92,8 +105,17 @@ void handleInput(GLFWwindow* window, float deltaTime) {
     cameraForward = q * glm::vec3(0, 0, 1);
 }
 
+glm::vec2 getMousePos(GLFWwindow* window, float deltaTime) {
+    static double cursorX = -1, cursorY = -1;
+
+    glfwGetCursorPos(window, &cursorX, &cursorY);
+
+    return glm::vec2(cursorX, cursorY);
+}
+
 int main()
 {
+    static bool huiswerkopdrachten = false;
     static double previousT = 0;
 
     std::cout << "Hello darkness my old friend!\n";
@@ -104,8 +126,8 @@ int main()
     //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
     //create a window
-    int width = 1920;
-    int height = 1080;
+    width = 1080;
+    height = 1080;
 
     //create a window
     GLFWwindow* window = glfwCreateWindow(width, height, "Hello!", nullptr, NULL);
@@ -121,70 +143,86 @@ int main()
     //initialise window 
     glViewport(0, 0, width, height);
 
-    setupResources();
-
-    /// SETUP MATRIX ///
-    /*
-    glUseProgram(myProgram);
-
-    int worldLoc = glGetUniformLocation(myProgram, "world");        
-    int viewLoc = glGetUniformLocation(myProgram, "view");
-    int projectionLoc = glGetUniformLocation(myProgram, "projection");
-    */
-
-    /// END SETUP MATRIX ///
+    if (huiswerkopdrachten) {
+        setupResources();
 
 
-    // enable stuff so depth is rendered properly
-    glEnable(GL_CULL_FACE);
-    glEnable(GL_DEPTH_TEST);
-    glDisable(GL_BLEND);
-    glDepthFunc(GL_LEQUAL);
+        /// SETUP MATRIX ///
+        /*
+        glUseProgram(myProgram);
+
+        int worldLoc = glGetUniformLocation(myProgram, "world");
+        int viewLoc = glGetUniformLocation(myProgram, "view");
+        int projectionLoc = glGetUniformLocation(myProgram, "projection");
+        */
+
+        /// END SETUP MATRIX ///
+
+
+        // enable stuff so depth is rendered properly
+        glEnable(GL_CULL_FACE);
+        glEnable(GL_DEPTH_TEST);
+        glDisable(GL_BLEND);
+        glDepthFunc(GL_LEQUAL);
+    }
+    else {
+        setupFinalResources();
+    }
 
     while (!glfwWindowShouldClose(window)) 
     {
         //processInput(window);
 
-        double t = glfwGetTime();
+        t = glfwGetTime();
         float deltaT = float(t) - previousT;
         previousT = t;
 
-        handleInput(window, deltaT);
-        
-        //lightDir = glm::vec3(0.4, -0.5f, 0.4);
-        lightDir = glm::vec3(sin(t/3), -0.5f, cos(t/3));
+        if (huiswerkopdrachten) {
+            handleInput(window, deltaT);
 
-        //colour background
-        float r = (float)sin(t);
-        float g = (float)cos(1.4f * t);
-        float b = (float)sin(1.7f * t);
+            //lightDir = glm::vec3(0.4, -0.5f, 0.4);
+            lightDir = glm::vec3(sin(t / 3), -0.5f, cos(t / 3));
 
-        r = glm::max(r, 0.5f);
-        g = glm::max(g, 0.8f * float(sin(t)));
-        b = glm::max(b, 0.8f * float(cos(t)));
+            //colour background
+            float r = (float)sin(t);
+            float g = (float)cos(1.4f * t);
+            float b = (float)sin(1.7f * t);
 
-        glm::mat4 view = glm::lookAt(cameraPosition, cameraPosition + cameraForward, cameraUp);
-        glm::mat4 projection = glm::perspective(glm::radians(65.0f), width / (float)height, 0.1f, 1000.0f);
+            r = glm::max(r, 0.5f);
+            g = glm::max(g, 0.8f * float(sin(t)));
+            b = glm::max(b, 0.8f * float(cos(t)));
 
+            view = glm::lookAt(cameraPosition, cameraPosition + cameraForward, cameraUp);
+            projection = glm::perspective(glm::radians(65.0f), width / (float)height, 0.1f, 1000.0f);
+        }
+        else {
+            mousePos = getMousePos(window, deltaT);
+            //cout << mousePos.x << ", " << mousePos.y << "\n";
+        }
         //glClearColor(r, g, b, 1.0f);
         glClearColor(0,0,0,0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
 
-        drawSky(view, projection);
+        if (huiswerkopdrachten) {
+            drawSky(view, projection);
 
-        renderTerrain(view, projection);
+            renderTerrain(view, projection);
 
 
-        // MODEL
-        //glEnable(GL_BLEND);
-        //glBlendFunc(GL_DST_COLOR, GL_ZERO);
-        //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        //glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ONE);
+            // MODEL
+            //glEnable(GL_BLEND);
+            //glBlendFunc(GL_DST_COLOR, GL_ZERO);
+            //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            //glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ONE);
 
-        renderModel(backpack, modelProgram, glm::vec3(119, 8, 120), glm::vec3(glm::radians(1.0) * -30.0f, glm::radians(1.0) * 230.0f, glm::radians(1.0) * -10.0f), 1, view, projection);
-        renderModel(hut, hutProgram, glm::vec3(120, 8, 140), glm::vec3(0, glm::radians(1.0) * -45.0f, 0), 0.05, view, projection);
+            renderModel(backpack, modelProgram, glm::vec3(119, 8, 120), glm::vec3(glm::radians(1.0) * -30.0f, glm::radians(1.0) * 230.0f, glm::radians(1.0) * -10.0f), 1, view, projection);
+            renderModel(hut, hutProgram, glm::vec3(120, 8, 140), glm::vec3(0, glm::radians(1.0) * -45.0f, 0), 0.05, view, projection);
 
-        //glDisable(GL_BLEND);
+            //glDisable(GL_BLEND);
+        }
+        else {
+            renderCurlImage();
+        }
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -547,6 +585,183 @@ void setupResources() {
     glUniform1i(glGetUniformLocation(myProgram, "grass"), 4);
     glUniform1i(glGetUniformLocation(myProgram, "snow"), 5);
     glUniform1i(glGetUniformLocation(myProgram, "rock"), 6);
+}
+
+void renderCurlImage() {
+    glCullFace(GL_BACK);
+    glEnable(GL_DEPTH_TEST);
+
+    glUseProgram(myProgram);
+
+    int curlWorldLoc = glGetUniformLocation(myProgram, "world");
+    int curlViewLoc = glGetUniformLocation(myProgram, "view");
+    int curlProjectionLoc = glGetUniformLocation(myProgram, "projection");
+    int curlMouse = glGetUniformLocation(myProgram, "mouse");
+    int curlTime = glGetUniformLocation(myProgram, "time");
+
+    int curlCamPos = glGetUniformLocation(myProgram, "cameraPosition");
+    int curlLight = glGetUniformLocation(myProgram, "lightDirection");
+
+    glm::mat4 world = glm::mat4(1.f);
+    //world = glm::rotate(world, glm::radians(float(t)*45.0f), glm::vec3(0.5, float(sin(t)), 0.5));
+    //world = glm::rotate(world, glm::radians(10.0f), glm::vec3(float(sin(t)), int(t)%360, float(cos(t))));
+    
+    //world = glm::translate(world, glm::vec3(float(tan(t)*0.3), float(cos(t) * 0.1), float(sin(t)*0.1)+2.5));
+    world = glm::translate(world, glm::vec3(250, -400, 250));    
+    world = glm::rotate(world, glm::radians(180.0f), glm::vec3(0,1,0));
+    world = glm::scale(world, glm::vec3(0.5, 0.5, 0.5));
+    //world = glm::rotate(world, glm::radians(20.0f), glm::vec3(sin(t*2), sin(t), cos(t)));
+
+
+    glUniformMatrix4fv(curlWorldLoc, 1, GL_FALSE, glm::value_ptr(world));
+    glUniformMatrix4fv(curlViewLoc, 1, GL_FALSE, glm::value_ptr(view));
+    glUniformMatrix4fv(curlProjectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
+    glUniform3fv(curlCamPos, 1, glm::value_ptr(cameraPosition));
+    glUniform3fv(curlLight, 1, glm::value_ptr(lightDir));
+
+    glUniform2fv(curlMouse, 1, glm::value_ptr(mousePos));
+
+    glUniform1f(curlTime, float(t));
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, image);
+
+    glBindVertexArray(plane);
+
+    glDrawElements(GL_TRIANGLES, indexesSize, GL_UNSIGNED_INT, 0);
+}
+
+void setupFinalResources() {
+    image = loadTexture("Candle.png", GL_RGBA, 4);
+
+    cameraPosition = glm::vec3(0, 2, 0);
+
+    static float pitch = 90.0f;
+
+    glm::vec3 euler(glm::radians(pitch), 0, 0);
+    glm::quat q(euler);
+    cameraPosition += q * glm::vec3(1,1,1);
+
+    cameraUp = q * glm::vec3(0, 1, 0);
+    cameraForward = q * glm::vec3(0, 0, 1);
+
+    plane = GeneratePlane(1000, 1000, 1.0f, 1.0f, indexesSize);
+    /*
+    float vertices[] = {
+        // positions            //colors            // tex coords   // normals
+        0.5f, -0.5f, -0.5f,     0.0f, 1.0f, 1.0f,   1.f, 0.f,       0.f, -1.f, 0.f,
+        0.5f, -0.5f, 0.5f,      0.0f, 1.0f, 1.0f,   1.f, 1.f,       0.f, -1.f, 0.f,
+        -0.5f, -0.5f, 0.5f,     0.0f, 1.0f, 1.0f,   0.f, 1.f,       0.f, -1.f, 0.f,
+        -0.5f, -0.5f, -.5f,     0.0f, 1.0f, 1.0f,   0.f, 0.f,       0.f, -1.f, 0.f ,
+        
+        0.5f, 0.5f, -0.5f,      1.0f, 0.0f, 1.0f,   2.f, 0.f,       1.f, 0.f, 0.f,
+        0.5f, 0.5f, 0.5f,       1.0f, 0.0f, 1.0f,   2.f, 1.f,       1.f, 0.f, 0.f,
+
+        0.5f, 0.5f, 0.5f,       1.0f, 1.0f, 0.0f,   1.f, 2.f,       0.f, 0.f, 1.f,
+        -0.5f, 0.5f, 0.5f,      1.0f, 1.0f, 0.0f,   0.f, 2.f,       0.f, 0.f, 1.f,
+
+        -0.5f, 0.5f, 0.5f,      1.0f, 1.0f, 0.5f,   -1.f, 1.f,      -1.f, 0.f, 0.f,
+        -0.5f, 0.5f, -.5f,      1.0f, 1.0f, 0.5f,   -1.f, 0.f,      -1.f, 0.f, 0.f,
+
+        -0.5f, 0.5f, -.5f,      1.0f, 0.5f, 1.0f,   0.f, -1.f,      0.f, 0.f, -1.f,
+        0.5f, 0.5f, -0.5f,      1.0f, 0.5f, 1.0f,   1.f, -1.f,      0.f, 0.f, -1.f,
+
+        -0.5f, 0.5f, -.5f,      0.5f, 1.0f, 1.0f,   3.f, 0.f,       0.f, 1.f, 0.f,
+        -0.5f, 0.5f, 0.5f,      0.5f, 1.0f, 1.0f,   3.f, 1.f,       0.f, 1.f, 0.f,
+
+        0.5f, -0.5f, 0.5f,      0.7f, 1.0f, 1.0f,   1.f, 1.f,       0.f, 0.f, 1.f,
+        -0.5f, -0.5f, 0.5f,     0.7f, 1.0f, 1.0f,   0.f, 1.f,       0.f, 0.f, 1.f,
+
+        -0.5f, -0.5f, 0.5f,     1.0f, 0.7f, 1.0f,   0.f, 1.f,       -1.f, 0.f, 0.f,
+        -0.5f, -0.5f, -.5f,     1.0f, 0.7f, 1.0f,   0.f, 0.f,       -1.f, 0.f, 0.f,
+
+        -0.5f, -0.5f, -.5f,     1.0f, 1.0f, 0.7f,   0.f, 0.f,       0.f, 0.f, -1.f,
+        0.5f, -0.5f, -0.5f,     1.0f, 1.0f, 0.7f,   1.f, 0.f,       0.f, 0.f, -1.f,
+
+        0.5f, -0.5f, -0.5f,     1.0f, 1.0f, 1.0f,   1.f, 0.f,       1.f, 0.f, 0.f,
+        0.5f, -0.5f, 0.5f,      1.0f, 1.0f, 1.0f,   1.f, 1.f,       1.f, 0.f, 0.f,
+
+        0.5f, 0.5f, -0.5f,      0.0f, 0.0f, 0.0f,   2.f, 0.f,       0.f, 1.f, 0.f,
+        0.5f, 0.5f, 0.5f,       0.0f, 0.0f, 0.0f,   2.f, 1.f,       0.f, 1.f, 0.f
+    };
+
+    unsigned int indexes[] = {
+        // DOWN
+        0, 1, 2,   // first triangle
+        0, 2, 3,    // second triangle
+        // BACK
+        14, 6, 7,   // first triangle
+        14, 7, 15,    // second triangle
+        // RIGHT
+        20, 4, 5,   // first triangle
+        20, 5, 21,    // second triangle
+        // LEFT
+        16, 8, 9,   // first triangle
+        16, 9, 17,    // second triangle
+        // FRONT
+        18, 10, 11,   // first triangle
+        18, 11, 19,    // second triangle
+        // UP
+        22, 12, 13,   // first triangle
+        22, 13, 23,    // second triangle
+    }; 
+    indexesSize = sizeof(indexes);
+
+    //generate vertex array and buffer
+    glGenVertexArrays(1, &VAO);
+    unsigned int VBO;
+    glGenBuffers(1, &VBO);
+    unsigned int EBO;
+    glGenBuffers(1, &EBO);
+
+    //bind vertex array and buffer
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+
+    // 0. copy our vertices array in a buffer for OpenGL to use
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indexes), indexes, GL_STATIC_DRAW);
+
+    // 1. then set the vertex attributes pointers
+
+    int stride = 11 * sizeof(float); //Move the size of 11 floats to start of next vertice
+    //pos
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, 0);
+    glEnableVertexAttribArray(0);
+    //colour
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void*)(sizeof(float) * 3));
+    glEnableVertexAttribArray(1);
+    //uv
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride, (void*)(sizeof(float) * 6));
+    glEnableVertexAttribArray(2);
+    //normal
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, stride, (void*)(sizeof(float) * 8));
+    glEnableVertexAttribArray(3);
+    */
+    ///shaders
+    unsigned int vertCurl, fragCurl;
+
+    CreateShader("vertCurl.shader", GL_VERTEX_SHADER, vertCurl);
+    CreateShader("fragCurl.shader", GL_FRAGMENT_SHADER, fragCurl);
+
+
+    //create program to hold shaders
+    myProgram = glCreateProgram();
+    glAttachShader(myProgram, vertCurl);
+    glAttachShader(myProgram, fragCurl);
+
+    glLinkProgram(myProgram);
+
+    glDeleteShader(vertCurl);
+    glDeleteShader(fragCurl);
+
+    glUseProgram(myProgram);
+    glUniform1i(glGetUniformLocation(myProgram, "image"), 0);
+
+    view = glm::lookAt(cameraPosition, cameraPosition + cameraForward, cameraUp);
+    projection = glm::perspective(glm::radians(65.0f), width / (float)height, 0.1f, 1000.0f);
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

@@ -620,6 +620,10 @@ void renderCurlImage() {
     glUniform3fv(curlCamPos, 1, glm::value_ptr(cameraPosition));
     glUniform3fv(curlLight, 1, glm::value_ptr(lightDir));
 
+    //get mousepos to scale to size of image
+    mousePos.x += 250;
+    mousePos.y += 250;
+    //mousePos.y = mousePos.y / height;
     glUniform2fv(curlMouse, 1, glm::value_ptr(mousePos));
 
     glUniform1f(curlTime, float(t));

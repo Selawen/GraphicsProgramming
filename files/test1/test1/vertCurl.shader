@@ -23,9 +23,6 @@ float random(vec2 p)
 		23.14069263277926, // e^pi (Gelfond's constant)
 		2.665144142690225 // 2^sqrt(2) (Gelfond-Schneider constant)
 	);
-
-	//float mouseVal = mouse.x*mouse.y;
-
 	//return fract(cos(mod(sin(mouseVal)*10, 1e-7 + 256.0 * dot(p, K1))) * time);
 	return fract(cos(mod(123456789., 1e-7 + 256.0 * dot(p, K1))) * time);
 }
@@ -39,8 +36,12 @@ void main() {
 	//worldPixel.y += random(vUV)*10;
 	
 	//dis = int(sqrt(int(vPos.x - mouse.x) ^ 2 + int(vPos.y - mouse.y) ^ 2));
-	dis = (vPos.xy - mouse) ;
-	worldPixel += normalize(vec3(random(col.rg)*dis.x, random(col.bg)*dis.y, random(col.gr)*2))*10;
+	dis = (vPos.xy - (mouse));
+	//clamp(dis, -5, 5);
+	dis /= 600;
+	worldPixel += vec3(random(col.rg)*10*dis.x, random(col.bg)*10, random(col.gr)*10*dis.y);
+	//worldPixel += vec3(random(col.rg)*dis.x, random(col.bg), random(col.gr)* dis.y)*10;
+	//worldPixel += normalize(vec3(random(col.rg)*dis.x, random(col.bg)*dis.y, random(col.gr)*2))*10;
 	//worldPixel += normalize(vec3(random(col.rg*dis)*dis.x, random(col.bg)*2, random(col.gr*dis)*dis.y))*10;
 	//worldPixel += normalize(vec3(random(col.rg)+dis, random(col.bg)*2, random(col.gr)+dis))*10;
 	//worldPixel += vec3(random(vUV), random(vUV)*2, random(vUV))*10;

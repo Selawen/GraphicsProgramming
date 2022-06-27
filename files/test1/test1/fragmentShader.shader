@@ -6,7 +6,6 @@ in vec2 uv;
 in vec3 normal;
 in vec4 worldPixel;
 
-//uniform sampler2D diffuseSampler;
 uniform sampler2D heightmap;
 uniform sampler2D normalMap;
 
@@ -20,16 +19,11 @@ vec3 lerp(vec3 a, vec3 b, float t) {
 
 void main() 
 {
-	//vec4 diffuseColour = texture(diffuseSampler, uv);
 	vec4 diffuseColour = texture(heightmap, uv);
-	//vec4 diffuseColour = texture(normalMap, uv);
 
-	//vec3 normalColor = vec3(uv, uv.r);
 	vec3 normalColor = normalize(texture(normalMap, uv).rbg * 2 - 1);
 	normalColor.b *= -1;
 	normalColor.r *= -1;
-
-	//FragColor = vec4(normalColor, 1.0);
 	
 	vec3 lightDir = normalize(lightDirection); //vec3(0, -0.5, -1)
 
@@ -55,5 +49,5 @@ void main()
 
 	vec3 diffuse = lerp(lerp(lerp(lerp(lerp(dirtColor, sandColor, ds), grassColor, sg), grassColor, gg), rockColor, gr), snowColor, rsn);
 
-	FragColor = vec4(diffuse, 1.0) * light; //diffuseColour * light + specular; //diffuseColour; // *light + specular;
+	FragColor = vec4(diffuse, 1.0) * light; // + specular;
 }

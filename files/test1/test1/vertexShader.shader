@@ -18,7 +18,6 @@ void main()
     worldPixel =  world * vec4(vPos, 1.0f);
 
     vec4 diffuseColor = texture(heightmap, vUV);
-    //vec4 diffuseColor = vec4(vUV, 1.0, 1.0);
     worldPixel.y += diffuseColor.r * 50;
 
     gl_Position = projection * view * worldPixel;
